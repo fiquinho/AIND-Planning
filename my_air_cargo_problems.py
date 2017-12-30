@@ -61,6 +61,21 @@ class AirCargoProblem(Problem):
             """
             loads = []
             # TODO create all load ground actions from the domain Load action
+            for airport in self.airports:
+                for cargo in self.cargos:
+                    for plane in self.planes:
+                        positive_preconditions = [expr("At({}, {})".format(plane, airport)),
+                                                  expr("At({}, {})".format(cargo, airport))]
+                        negative_preconditions = []
+                        positive_effect = [expr("In({}, {})".format(cargo, plane))]
+                        negative_effect = [expr("At({}, {})".format(cargo, airport))]
+
+                        load = Action(expr("Load({}, {}, {})".format(cargo, plane, airport)),
+                                      [positive_preconditions, negative_preconditions],
+                                      [positive_effect, negative_effect])
+
+                        loads.append(load)
+
             return loads
 
         def unload_actions():
@@ -69,7 +84,21 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             """
             unloads = []
-            # TODO create all Unload ground actions from the domain Unload action
+            for airport in self.airports:
+                for cargo in self.cargos:
+                    for plane in self.planes:
+                        positive_preconditions = [expr("In({}, {})".format(cargo, plane)),
+                                                  expr("At({}, {})".format(plane, airport))]
+                        negative_preconditions = []
+                        positive_effect = [expr("At({}, {})".format(cargo, airport))]
+                        negative_effect = [expr("In({}, {})".format(cargo, plane))]
+
+                        unload = Action(expr("Unload({}, {}, {})".format(cargo, plane, airport)),
+                                      [positive_preconditions, negative_preconditions],
+                                      [positive_effect, negative_effect])
+
+                        unloads.append(unload)
+
             return unloads
 
         def fly_actions():
@@ -105,6 +134,28 @@ class AirCargoProblem(Problem):
         """
         # TODO implement
         possible_actions = []
+
+        # Get all the possible actions without checking if they can be executed
+        actions = self.get_actions()
+
+        # Decode the state, to get an object with separate positive and negative fluents
+        fluent_state = decode_state(state, self.state_map)
+
+        for action in actions:
+            can = True
+            # Check all the positive preconditions of the action are satisfied
+            for pre_pos in action.precond_pos:
+                if pre_pos not in fluent_state.pos:
+                    can = False
+
+            # Check all the negative preconditions of the action are satisfied
+            for pre_neg in action.precond_neg:
+                if pre_neg not in fluent_state.neg:
+                    can = False
+
+            if can:
+                possible_actions.append(action)
+
         return possible_actions
 
     def result(self, state: str, action: Action):
@@ -117,8 +168,21 @@ class AirCargoProblem(Problem):
         :return: resulting state after action
         """
         # TODO implement
-        new_state = FluentState([], [])
-        return encode_state(new_state, self.state_map)
+
+        possible_actions = self.actions(state)
+
+        # if not action in possible_actions:
+        #     raise ValueError("Given actions is not in possible actions for this state")
+
+        fluent_state = decode_state(state, self.state_map)
+        for add_eff in action.effect_add:
+            fluent_state.pos.append(add_eff)
+            fluent_state.pos.remove(add_eff)
+        for rem_eff in action.effect_rem:
+            fluent_state.neg.append(rem_eff)
+            fluent_state.neg.remove(rem_eff)
+
+        return encode_state(fluent_state, self.state_map)
 
     def goal_test(self, state: str) -> bool:
         """ Test the state to see if goal is reached
@@ -186,6 +250,8 @@ def air_cargo_p1() -> AirCargoProblem:
             ]
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
+# TODO: Ver cómo son los objetos con el debugueador
+problem = air_cargo_p1()
 
 def air_cargo_p2() -> AirCargoProblem:
     # TODO implement Problem 2 definition
@@ -195,3 +261,6 @@ def air_cargo_p2() -> AirCargoProblem:
 def air_cargo_p3() -> AirCargoProblem:
     # TODO implement Problem 3 definition
     pass
+
+
+pass
