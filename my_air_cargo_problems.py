@@ -60,7 +60,7 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             """
             loads = []
-            # TODO create all load ground actions from the domain Load action
+            # TODO comment this snippet
             for airport in self.airports:
                 for cargo in self.cargos:
                     for plane in self.planes:
@@ -83,6 +83,7 @@ class AirCargoProblem(Problem):
 
             :return: list of Action objects
             """
+            # TODO comment this snippet
             unloads = []
             for airport in self.airports:
                 for cargo in self.cargos:
@@ -106,6 +107,7 @@ class AirCargoProblem(Problem):
 
             :return: list of Action objects
             """
+            # TODO comment this snippet
             flys = []
             for fr in self.airports:
                 for to in self.airports:
@@ -132,7 +134,7 @@ class AirCargoProblem(Problem):
             e.g. 'FTTTFF'
         :return: list of Action objects
         """
-        # TODO implement
+
         possible_actions = []
 
         # Get all the possible actions without checking if they can be executed
@@ -153,6 +155,7 @@ class AirCargoProblem(Problem):
                 if pre_neg not in fluent_state.neg:
                     can = False
 
+            # If all the preconditions are satisfied, append the action to the possible actions
             if can:
                 possible_actions.append(action)
 
@@ -167,22 +170,17 @@ class AirCargoProblem(Problem):
         :param action: Action applied
         :return: resulting state after action
         """
-        # TODO implement
 
-        possible_actions = self.actions(state)
+        new_state = list(state)
 
-        # if not action in possible_actions:
-        #     raise ValueError("Given actions is not in possible actions for this state")
-
-        fluent_state = decode_state(state, self.state_map)
         for add_eff in action.effect_add:
-            fluent_state.pos.append(add_eff)
-            fluent_state.pos.remove(add_eff)
+            position = self.state_map.index(add_eff)
+            new_state[position] = 'T'
         for rem_eff in action.effect_rem:
-            fluent_state.neg.append(rem_eff)
-            fluent_state.neg.remove(rem_eff)
+            position = self.state_map.index(rem_eff)
+            new_state[position] = 'F'
 
-        return encode_state(fluent_state, self.state_map)
+        return "".join(new_state)
 
     def goal_test(self, state: str) -> bool:
         """ Test the state to see if goal is reached
@@ -250,8 +248,12 @@ def air_cargo_p1() -> AirCargoProblem:
             ]
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
-# TODO: Ver cómo son los objetos con el debugueador
-problem = air_cargo_p1()
+
+# # TODO: Ver cómo son los objetos con el debugueador
+# problem = air_cargo_p1()
+# actions = problem.actions_list
+# problem.result(problem.initial_state_TF, actions[4])
+
 
 def air_cargo_p2() -> AirCargoProblem:
     # TODO implement Problem 2 definition
