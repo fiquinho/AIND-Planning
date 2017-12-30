@@ -219,8 +219,19 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+
         count = 0
+        # Create a PropKB object that will have an attribute with all the True clauses for this state
+        kb = PropKB()
+        kb.tell(decode_state(node.state, self.state_map).pos_sentence())
+
+        # Check how many goal clauses are satisfied in this state.
+        # Each clause not satisfied add 1 to the heuristic
+        # (I would have to at least satisfy this condition to get to the goal).
+        for clause in self.goal:
+            if clause not in kb.clauses:
+                count += 1
+
         return count
 
 
@@ -250,9 +261,10 @@ def air_cargo_p1() -> AirCargoProblem:
 
 
 # # TODO: Ver cómo son los objetos con el debugueador
-# problem = air_cargo_p1()
-# actions = problem.actions_list
-# problem.result(problem.initial_state_TF, actions[4])
+problem = air_cargo_p1()
+actions = problem.actions_list
+result = problem.result(problem.initial_state_TF, actions[4])
+problem.goal_test(result)
 
 
 def air_cargo_p2() -> AirCargoProblem:
