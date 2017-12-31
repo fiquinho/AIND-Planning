@@ -260,13 +260,6 @@ def air_cargo_p1() -> AirCargoProblem:
     return AirCargoProblem(cargos, planes, airports, init, goal)
 
 
-# # TODO: Ver cómo son los objetos con el debugueador
-problem = air_cargo_p1()
-actions = problem.actions_list
-result = problem.result(problem.initial_state_TF, actions[4])
-problem.goal_test(result)
-
-
 def air_cargo_p2() -> AirCargoProblem:
     cargos = ['C1', 'C2', 'C3']
     planes = ['P1', 'P2', 'P3']
