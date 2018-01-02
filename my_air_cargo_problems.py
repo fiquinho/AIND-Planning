@@ -60,20 +60,24 @@ class AirCargoProblem(Problem):
             :return: list of Action objects
             """
             loads = []
-            # TODO comment this snippet
+            # Go trough each combination of airport-cargo-plane possible
             for airport in self.airports:
                 for cargo in self.cargos:
                     for plane in self.planes:
+                        # Set the positive and negative preconditions of this action
                         positive_preconditions = [expr("At({}, {})".format(plane, airport)),
                                                   expr("At({}, {})".format(cargo, airport))]
                         negative_preconditions = []
+                        # Set the positive and negative effects of this action
                         positive_effect = [expr("In({}, {})".format(cargo, plane))]
                         negative_effect = [expr("At({}, {})".format(cargo, airport))]
 
+                        # Create the Action object for this action
                         load = Action(expr("Load({}, {}, {})".format(cargo, plane, airport)),
                                       [positive_preconditions, negative_preconditions],
                                       [positive_effect, negative_effect])
 
+                        # Add to load actions list
                         loads.append(load)
 
             return loads
@@ -83,21 +87,26 @@ class AirCargoProblem(Problem):
 
             :return: list of Action objects
             """
-            # TODO comment this snippet
+
             unloads = []
+            # Go trough each combination of airport-cargo-plane possible
             for airport in self.airports:
                 for cargo in self.cargos:
                     for plane in self.planes:
+                        # Set the positive and negative preconditions of this action
                         positive_preconditions = [expr("In({}, {})".format(cargo, plane)),
                                                   expr("At({}, {})".format(plane, airport))]
                         negative_preconditions = []
+                        # Set the positive and negative effects of this action
                         positive_effect = [expr("At({}, {})".format(cargo, airport))]
                         negative_effect = [expr("In({}, {})".format(cargo, plane))]
 
+                        # Create the Action object for this action
                         unload = Action(expr("Unload({}, {}, {})".format(cargo, plane, airport)),
                                       [positive_preconditions, negative_preconditions],
                                       [positive_effect, negative_effect])
 
+                        # Add to unload actions list
                         unloads.append(unload)
 
             return unloads
@@ -107,12 +116,13 @@ class AirCargoProblem(Problem):
 
             :return: list of Action objects
             """
-            # TODO comment this snippet
+
             flys = []
             for fr in self.airports:
                 for to in self.airports:
                     if fr != to:
                         for p in self.planes:
+                            # Set the positive and negative preconditions of this action
                             precond_pos = [expr("At({}, {})".format(p, fr)),
                                            ]
                             precond_neg = []

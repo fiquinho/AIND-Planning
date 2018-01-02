@@ -306,7 +306,7 @@ class PlanningGraph:
         #   to see if a proposed PgNode_a has prenodes that are a subset of the previous S level.  Once an
         #   action node is added, it MUST be connected to the S node instances in the appropriate s_level set.
 
-        # Ax set of s_nodes - empty to start
+        # Ax set of a_nodes - empty to start
         self.a_levels.append(set())
 
         # Create one Action node for each possible action
@@ -341,8 +341,11 @@ class PlanningGraph:
         # Sx set of s_nodes - empty to start
         self.s_levels.append(set())
 
+        # Iterate over the action nodes of last level
         for action_node in self.a_levels[level - 1]:
+            # Iterate over the effects of this nodes
             for effect in action_node.effnodes:
+                # Add the effect to this S level, and connect it with the previous A level
                 self.s_levels[level].add(effect)
                 effect.parents.add(action_node)
                 action_node.children.add(effect)
